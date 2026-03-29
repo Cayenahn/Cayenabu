@@ -167,6 +167,8 @@ aside.active{left:0}
 body.mobile aside{left:-100%;width:80%}
 body.mobile aside.active{left:0}
 body.desktop aside{left:0;width:250px}
+body.mobile  #menu-toggle{display:flex}
+body.desktop #menu-toggle{display:none}
 
 /* ── Botón hamburguesa ───────────────────────────────────────────── */
 #menu-toggle{
@@ -1190,6 +1192,8 @@ if (esMobile()) {
 } else {
     console.log("Es una PC 💻");
     document.body.classList.add("desktop");
+    document.querySelector('aside').classList.add('active');
+    document.getElementById('menu-toggle').style.display = 'none';
 }
 const esMobile2 = window.innerWidth <= 768;
 </script>
