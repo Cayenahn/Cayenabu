@@ -157,8 +157,11 @@ body{overflow-x:hidden}
 .fb-total.zero{color:rgba(255,255,255,.3)}
 .fb-total.credit{color:#BEF264}
 
-.ovbg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}
-.ovbg.open{display:block}
+.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}
+.sb-backdrop.open{display:block}
+
+aside{position:fixed;left:-250px;top:0;width:250px;height:100%;transition:0.3s}
+aside.active{left:0}
 
 @media(max-width:900px){
   .sidebar{position:fixed;left:0;top:0;bottom:0;height:100%;transform:translateX(-100%)
@@ -580,7 +583,7 @@ button {
 }
 
 /* Overlays/modales — iOS Safari no muestra bien backdrop-filter en todos */
-.ovbg {
+.sb-backdrop {
   -webkit-backdrop-filter: none; /* desactivar en iOS para rendimiento */
 }
 
@@ -657,14 +660,17 @@ p, td, input, textarea, .sol-meta {
 
 /* MOBILE_RESPONSIVE */
 
-@media(min-width:901px){.sidebar{position:relative;transform:none;height:100vh}.ovbg{display:none!important}}
+@media(min-width:901px){.sidebar{position:relative;transform:none;height:100vh}.sb-backdrop{display:none!important}}
 </style>
+<link rel="stylesheet" href="sidebar.css">
 </head>
 <body>
-<div class="ovbg" id="ovbg" onclick="closeSB()"></div>
+<div id="sb-backdrop" class="sb-backdrop"></div>
 <div class="app">
 
-  <aside class="sidebar" id="sb">
+<button id="menu-toggle">☰</button>
+
+  <aside class="sidebar" id="cayena-sidebar">
     <div class="logo-wrap">
       <div class="logo"><div class="logo-dot"></div>Cayena</div>
       <div class="logo-rtn">RTN: 0318-2001-022079</div>
@@ -695,7 +701,7 @@ p, td, input, textarea, .sol-meta {
   <div class="main">
     <div class="topbar">
       <div class="tl">
-        <button class="mb" onclick="toggleSB()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <button id="sb-toggle" class="mb sb-toggle"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
         <span class="tey">Cayena</span><div class="tsep"></div>
         <span class="ttl">Resumen ISV</span><div class="tsep"></div>
         <span class="tper" id="tper">—</span>
@@ -865,8 +871,6 @@ p, td, input, textarea, .sol-meta {
 const el=id=>document.getElementById(id);
 const Lf=n=>'L '+parseFloat(n||0).toLocaleString('es-HN',{minimumFractionDigits:2,maximumFractionDigits:2});
 const MO=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-function toggleSB(){el('sb').classList.toggle('open');el('ovbg').classList.toggle('open');}
-function closeSB(){el('sb').classList.remove('open');el('ovbg').classList.remove('open');}
 function fmtDate(iso){const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;}
 
 function loadData(){
@@ -1025,7 +1029,39 @@ function exportPDF() {
     + '<table><thead><tr><th>Fecha</th><th>Gravadas 15%</th><th>Gravadas 18%</th><th>Exentas</th><th>ISV Total</th></tr></thead>'
     + '<tbody>' + rows + '</tbody></table></div>'
     + '<div class="footer"><span>Cayena - Liquidaci\u00F3n ISV</span><span>' + fecha + '</span></div>'
-    + '</body></html>';
+    + '<script>
+(function () {
+  var sidebar  = document.getElementById('cayena-sidebar');
+  var toggle   = document.getElementById('sb-toggle');
+  var backdrop = document.getElementById('sb-backdrop');
+
+  if (!sidebar || !toggle) return;
+
+  function open() {
+    sidebar.classList.add('open');
+    if (backdrop) backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  toggle.addEventListener('click', function () {
+    sidebar.classList.contains('open') ? close() : open();
+  });
+
+  if (backdrop) backdrop.addEventListener('click', close);
+
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 900) close();
+  });
+
+})();
+</script>
+</body></html>';
   var w = window.open('','_blank','width=900,height=700');
   w.document.write(html);
   w.document.close();
@@ -1049,5 +1085,45 @@ if(typeof DB_ISV !== 'undefined'){
   })();
 }
 </script>
+<script>
+(function () {
+  var sidebar  = document.getElementById('cayena-sidebar');
+  var toggle   = document.getElementById('sb-toggle');
+  var backdrop = document.getElementById('sb-backdrop');
+
+  if (!sidebar || !toggle) return;
+
+  function open() {
+    sidebar.classList.add('open');
+    if (backdrop) backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  toggle.addEventListener('click', function () {
+    sidebar.classList.contains('open') ? close() : open();
+  });
+
+  if (backdrop) backdrop.addEventListener('click', close);
+
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 900) close();
+  });
+
+})();
+</script>
+<script>
+const toggleBtn = document.getElementById('menu-toggle');
+const sidebar = document.querySelector('aside');
+toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+});
+</script>
+<script src="sidebar.js"></script>
 </body>
 </html>
