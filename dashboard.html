@@ -165,8 +165,8 @@ body{overflow:hidden}
 .mf{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--bg)}
 
 /* OVERLAY BG */
-.ovbg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}
-.ovbg.open{display:block}
+.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}
+.sb-backdrop.open{display:block}
 
 /* MOBILE */
 @media(max-width:900px){
@@ -583,7 +583,7 @@ button {
 }
 
 /* Overlays/modales — iOS Safari no muestra bien backdrop-filter en todos */
-.ovbg {
+.sb-backdrop {
   -webkit-backdrop-filter: none; /* desactivar en iOS para rendimiento */
 }
 
@@ -660,14 +660,14 @@ p, td, input, textarea, .sol-meta {
 
 /* MOBILE_RESPONSIVE */
 
-@media(min-width:901px){.sidebar{position:relative;transform:none;height:100vh}.ovbg{display:none!important}}
+@media(min-width:901px){.sidebar{position:relative;transform:none;height:100vh}.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}}
 </style>
 </head>
 <body>
-<div class="ovbg" id="ovbg" onclick="closeSB()"></div>
+<div id="sb-backdrop" class="sb-backdrop"></div>
 <div class="app">
 
-  <aside class="sidebar" id="sb">
+  <aside class="sidebar" id="cayena-sidebar">
     <div class="logo-wrap">
       <div class="logo"><div class="logo-dot"></div>Cayena</div>
       <div class="logo-rtn">RTN: 0318-2001-022079</div>
@@ -698,7 +698,7 @@ p, td, input, textarea, .sol-meta {
   <div class="main">
     <div class="topbar">
       <div class="tl">
-        <button class="mb" onclick="toggleSB()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <button id="sb-toggle" class="mb sb-toggle"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
         <span class="tey">Cayena</span><div class="tsep"></div>
         <span class="ttl">Estado de Resultados</span><div class="tsep"></div>
         <span class="tper" id="tper">—</span>
@@ -822,8 +822,6 @@ const v=id=>parseFloat(el(id).value)||0;
 const Lf=n=>'L '+parseFloat(n||0).toLocaleString('es-HN',{minimumFractionDigits:2,maximumFractionDigits:2});
 const pct=(n,t)=>t>0?(n/t*100).toFixed(1)+'%':'—';
 const MO=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-function toggleSB(){el('sb').classList.toggle('open');el('ovbg').classList.toggle('open');}
-function closeSB(){el('sb').classList.remove('open');el('ovbg').classList.remove('open');}
 function openModal(){
   const records=JSON.parse(localStorage.getItem('cayena_ingresos')||'[]');
   if(records.length){const t=parseFloat(records.reduce((s,r)=>s+(r.total||0),0).toFixed(2));if(t>0)el('f-ibv').value=t;}
@@ -1038,7 +1036,39 @@ function exportPDF() {
     + '<div style="font-size:14px;font-weight:700">Resultado Neto del Ejercicio</div>'
     + '<div style="font-size:28px;font-weight:800">' + g('r-neto') + '</div></div>'
     + '<div class="footer"><span>Cayena - Estado de Resultados</span><span>' + fecha + '</span></div>'
-    + '</body></html>';
+    + '<script>
+(function () {
+  var sidebar  = document.getElementById('cayena-sidebar');
+  var toggle   = document.getElementById('sb-toggle');
+  var backdrop = document.getElementById('sb-backdrop');
+
+  if (!sidebar || !toggle) return;
+
+  function open() {
+    sidebar.classList.add('open');
+    if (backdrop) backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  toggle.addEventListener('click', function () {
+    sidebar.classList.contains('open') ? close() : open();
+  });
+
+  if (backdrop) backdrop.addEventListener('click', close);
+
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 900) close();
+  });
+
+})();
+</script>
+</body></html>';
   var w = window.open('','_blank','width=900,height=700');
   w.document.write(html);
   w.document.close();
@@ -1047,5 +1077,37 @@ function exportPDF() {
 
 </script>
 <script src="supabase-config.js"></script>
+<script>
+(function () {
+  var sidebar  = document.getElementById('cayena-sidebar');
+  var toggle   = document.getElementById('sb-toggle');
+  var backdrop = document.getElementById('sb-backdrop');
+
+  if (!sidebar || !toggle) return;
+
+  function open() {
+    sidebar.classList.add('open');
+    if (backdrop) backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  toggle.addEventListener('click', function () {
+    sidebar.classList.contains('open') ? close() : open();
+  });
+
+  if (backdrop) backdrop.addEventListener('click', close);
+
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 900) close();
+  });
+
+})();
+</script>
 </body>
 </html>
