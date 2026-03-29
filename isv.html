@@ -160,8 +160,59 @@ body{overflow-x:hidden}
 .sb-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}
 .sb-backdrop.open{display:block}
 
-aside{position:fixed;left:-250px;top:0;width:250px;height:100%;transition:0.3s}
+aside{position:fixed;top:0;left:-100%;width:80%;height:100%;transition:0.3s;z-index:1000;background:#111}
 aside.active{left:0}
+@media(min-width:769px){aside{left:0;width:250px}}
+@media(max-width:768px){aside{left:-250px}aside.active{left:0}}
+body.mobile aside{left:-100%;width:80%}
+body.mobile aside.active{left:0}
+body.desktop aside{left:0;width:250px}
+
+/* ── Botón hamburguesa ───────────────────────────────────────────── */
+#menu-toggle{
+  position:fixed;
+  top:14px;
+  left:14px;
+  z-index:1100;
+  width:44px;
+  height:44px;
+  border:none;
+  border-radius:12px;
+  background:var(--blue);
+  box-shadow:0 4px 14px rgba(37,99,235,.35);
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:0;
+  transition:background .2s ease, box-shadow .2s ease, transform .15s ease;
+}
+#menu-toggle:hover{
+  background:var(--blue-deep);
+  box-shadow:0 6px 18px rgba(37,99,235,.45);
+  transform:scale(1.06);
+}
+#menu-toggle:active{ transform:scale(.95); }
+.bar{
+  display:block;
+  width:20px;
+  height:2px;
+  border-radius:2px;
+  background:#fff;
+  transition:transform .3s cubic-bezier(.4,0,.2,1),
+             opacity   .3s cubic-bezier(.4,0,.2,1),
+             width     .3s cubic-bezier(.4,0,.2,1);
+  transform-origin:center;
+}
+/* Animación a X cuando el aside está activo */
+aside.active ~ * #menu-toggle .bar-1,
+#menu-toggle.open .bar-1{ transform:translateY(7px) rotate(45deg); }
+aside.active ~ * #menu-toggle .bar-2,
+#menu-toggle.open .bar-2{ opacity:0; width:0; }
+aside.active ~ * #menu-toggle .bar-3,
+#menu-toggle.open .bar-3{ transform:translateY(-7px) rotate(-45deg); }
 
 @media(max-width:900px){
   .sidebar{position:fixed;left:0;top:0;bottom:0;height:100%;transform:translateX(-100%)
@@ -668,7 +719,11 @@ p, td, input, textarea, .sol-meta {
 <div id="sb-backdrop" class="sb-backdrop"></div>
 <div class="app">
 
-<button id="menu-toggle">☰</button>
+<button id="menu-toggle" aria-label="Abrir menú">
+  <span class="bar bar-1"></span>
+  <span class="bar bar-2"></span>
+  <span class="bar bar-3"></span>
+</button>
 
   <aside class="sidebar" id="cayena-sidebar">
     <div class="logo-wrap">
@@ -1122,7 +1177,21 @@ const toggleBtn = document.getElementById('menu-toggle');
 const sidebar = document.querySelector('aside');
 toggleBtn.addEventListener('click', () => {
     sidebar.classList.toggle('active');
+    toggleBtn.classList.toggle('open');
 });
+</script>
+<script>
+function esMobile() {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+if (esMobile()) {
+    console.log("Es un teléfono 📱");
+    document.body.classList.add("mobile");
+} else {
+    console.log("Es una PC 💻");
+    document.body.classList.add("desktop");
+}
+const esMobile2 = window.innerWidth <= 768;
 </script>
 <script src="sidebar.js"></script>
 </body>
