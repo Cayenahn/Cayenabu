@@ -27,7 +27,6 @@ body{overflow-x:hidden}
 .sidebar{width:240px;min-width:240px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:90;box-shadow:var(--shadow)}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .logo-wrap{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
-body.mobile .logo-wrap{padding-left:66px}
 .logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--text);line-height:1;display:flex;align-items:center;gap:8px}
 .logo-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#2563EB,#84CC16)}
 .logo-rtn{font-size:10px;color:var(--muted);margin-top:4px}
@@ -170,6 +169,24 @@ body.mobile aside.active{left:0}
 body.desktop aside{left:0;width:250px}
 body.mobile  #menu-toggle{display:flex !important}
 body.desktop #menu-toggle{display:none !important}
+
+/* En mobile: el botón vive en el flow del topbar, no flotando encima */
+body.mobile #menu-toggle{
+  position:static;
+  box-shadow:none;
+  background:none;
+  border:1px solid var(--border);
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  flex-shrink:0;
+}
+body.mobile #menu-toggle .bar{ background:var(--body); }
+body.mobile #menu-toggle:hover{ background:var(--bg); box-shadow:none; transform:none; }
+body.mobile #menu-toggle:active{ transform:scale(.95); }
+
+/* Ocultar el sb-toggle duplicado en mobile ya que #menu-toggle lo reemplaza */
+body.mobile .sb-toggle{ display:none !important; }
 
 /* ── Botón hamburguesa ───────────────────────────────────────────── */
 #menu-toggle{
@@ -722,11 +739,6 @@ p, td, input, textarea, .sol-meta {
 <div id="sb-backdrop" class="sb-backdrop"></div>
 <div class="app">
 
-<button id="menu-toggle" aria-label="Abrir menú">
-  <span class="bar bar-1"></span>
-  <span class="bar bar-2"></span>
-  <span class="bar bar-3"></span>
-</button>
 
   <aside class="sidebar" id="cayena-sidebar">
     <div class="logo-wrap">
@@ -759,6 +771,11 @@ p, td, input, textarea, .sol-meta {
   <div class="main">
     <div class="topbar">
       <div class="tl">
+        <button id="menu-toggle" aria-label="Abrir menú">
+          <span class="bar bar-1"></span>
+          <span class="bar bar-2"></span>
+          <span class="bar bar-3"></span>
+        </button>
         <button id="sb-toggle" class="mb sb-toggle"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
         <span class="tey">Cayena</span><div class="tsep"></div>
         <span class="ttl">Resumen ISV</span><div class="tsep"></div>
