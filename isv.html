@@ -658,6 +658,147 @@ p, td, input, textarea, .sol-meta {
 /* MOBILE_RESPONSIVE */
 
 @media(min-width:901px){.sidebar{position:relative;transform:none;height:100vh}.ovbg{display:none!important}}
+
+/* ═══════════════════════════════════════════════════════
+   TOPBAR MOBILE — QuickBooks style
+   ═══════════════════════════════════════════════════════ */
+
+/* Topbar siempre una sola línea en mobile */
+@media(max-width:900px){
+  .topbar{
+    padding: 0 12px;
+    height: 56px;
+    flex-shrink: 0;
+  }
+  .tl{
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .ttl{
+    font-size: 15px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+  }
+  .tey, .tsep{ display: none !important; }
+
+  /* Selector de mes — compacto en mobile */
+  #mes-selector-topbar .mes-select{
+    font-size: 11px !important;
+    padding: 4px 6px !important;
+    max-width: 110px !important;
+  }
+  #mes-selector-topbar .mes-nav-btn{
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 14px !important;
+  }
+
+  /* tr2: solo mostrar el botón primario, ocultar el resto */
+  .tr2{
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .tr2 .btn:not(.btn-primary):not(.btn-overflow){
+    display: none !important;
+  }
+  .tr2 .btn-primary{
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+    min-height: 36px !important;
+    white-space: nowrap;
+  }
+
+  /* Botón overflow ⋯ */
+  .btn-overflow{
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 !important;
+    font-size: 18px !important;
+    border-radius: 10px !important;
+  }
+}
+
+/* ── Menú overflow ── */
+.overflow-menu{
+  display: none;
+  position: fixed;
+  top: 60px;
+  right: 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: 0 8px 32px rgba(0,0,0,.12);
+  z-index: 500;
+  min-width: 200px;
+  overflow: hidden;
+  animation: omFadeIn .15s ease;
+}
+.overflow-menu.open{ display: block; }
+@keyframes omFadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.om-item{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--body);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: background .1s;
+  font-family: var(--font, inherit);
+}
+.om-item:hover{ background: var(--bg); }
+.om-item:not(:last-child){ border-bottom: 1px solid var(--border); }
+.om-icon{ font-size: 16px; width: 20px; flex-shrink: 0; }
+.om-backdrop{
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 499;
+}
+.om-backdrop.open{ display: block; }
+
+/* ── Barra de acción inferior (botón primario fijo) ── */
+@media(max-width:900px){
+  .fab-primary{
+    position: fixed;
+    bottom: max(20px, calc(20px + env(safe-area-inset-bottom)));
+    right: 16px;
+    z-index: 200;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: var(--font, inherit);
+    box-shadow: 0 4px 16px rgba(37,99,235,.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all .2s;
+    min-height: 48px;
+  }
+  .fab-primary:hover{ transform: scale(1.04); }
+  .fab-primary:active{ transform: scale(.96); }
+}
+@media(min-width:901px){
+  .fab-primary{ display: none !important; }
+}
+
 </style>
 </head>
 <body>
@@ -702,7 +843,12 @@ p, td, input, textarea, .sol-meta {
       <div class="tr2">
         <button class="btn" onclick="exportPDF()">Exportar PDF</button>
         <button class="btn btn-primary" onclick="location.href='ingresos.html'">← Ingresos</button>
+        <button class="btn btn-overflow" id="btn-overflow" title="Más opciones" aria-label="Más opciones">⋯</button>
       </div>
+      <div class="overflow-menu" id="overflow-menu">
+  <button class="om-item" onclick="exportPDF();document.getElementById('overflow-menu').classList.remove('open');document.getElementById('om-backdrop') && document.getElementById('om-backdrop').classList.remove('open')"><span class="om-icon">📄</span>Exportar PDF</button>
+</div>
+<div class="om-backdrop" id="om-backdrop"></div>
     </div>
 
     <div class="content">
@@ -1053,6 +1199,27 @@ if(typeof DB_ISV !== 'undefined'){
 (function() {
   if (typeof initSelectorMes === 'undefined') return;
   initSelectorMes('mes-selector-topbar', '2026-01');
+})();
+</script>
+<script>
+// ── Overflow menu toggle ──────────────────────────────────────────────────────
+(function(){
+  var omBtn = document.getElementById('btn-overflow');
+  var omMenu = document.getElementById('overflow-menu');
+  var omBd = document.getElementById('om-backdrop');
+  if(!omBtn || !omMenu) return;
+  omBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    omMenu.classList.toggle('open');
+    omBd && omBd.classList.toggle('open');
+  });
+  omBd && omBd.addEventListener('click', function(){
+    omMenu.classList.remove('open');
+    omBd.classList.remove('open');
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ omMenu.classList.remove('open'); omBd && omBd.classList.remove('open'); }
+  });
 })();
 </script>
 </body>
