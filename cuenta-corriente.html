@@ -31,6 +31,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .sidebar{width:240px;min-width:240px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;z-index:90;box-shadow:var(--shadow);transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .logo-wrap{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+body.mobile .logo-wrap{display:none}
 .logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--text);display:flex;align-items:center;gap:8px}
 .logo-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#2563EB,#84CC16)}
 .logo-rtn{font-size:10px;color:var(--muted);margin-top:4px}
@@ -48,7 +49,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .ur{font-size:11px;color:var(--muted)}
 .logout-btn{display:block;width:calc(100% - 32px);margin:0 16px 14px;font-family:var(--font);font-size:11px;font-weight:600;color:var(--red);background:none;border:1px solid #FECACA;border-radius:8px;padding:6px;cursor:pointer;transition:all .14s}
 .logout-btn:hover{background:var(--red-soft)}
-.topbar{height:58px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;gap:10px;box-shadow:var(--shadow)}
+.topbar{height:58px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;gap:10px;box-shadow:var(--shadow);position:relative;z-index:300}
 .mb{display:none;background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;line-height:1;border-radius:8px;min-height:44px}
 .mb:hover{background:var(--bg)}
 .tl{display:flex;align-items:center;gap:10px;min-width:0}
@@ -131,10 +132,10 @@ tr:hover td{background:var(--bg)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.ok{background:var(--green-ui)}
 .toast.err{background:var(--red)}
-.ovbg{display:none;position:fixed;inset:0;z-index:89;background:rgba(0,0,0,.3)}
-.ovbg.open{display:block}
+.sb-backdrop{display:none;position:fixed;inset:0;z-index:89;background:rgba(0,0,0,.3)}
+.sb-backdrop.open{display:block}
 @media(max-width:900px){
-  .sidebar{position:fixed;left:0;top:0;bottom:0;height:100%;transform:translateX(-100%)
+  .sidebar{position:fixed;left:0;top:58px;bottom:0;height:calc(100% - 58px);transform:translateX(-100%);overflow-y:auto;overflow-x:hidden
 }
   .sidebar.open{transform:translateX(0)}
   .main{width:100%}
@@ -544,7 +545,7 @@ button {
 }
 
 /* Overlays/modales — iOS Safari no muestra bien backdrop-filter en todos */
-.ovbg {
+.sb-backdrop {
   -webkit-backdrop-filter: none; /* desactivar en iOS para rendimiento */
 }
 
@@ -621,7 +622,60 @@ p, td, input, textarea, .sol-meta {
 
 /* MOBILE_RESPONSIVE */
 
-@media(min-width:901px){.sidebar{position:relative;transform:none;height:100vh}.ovbg{display:none!important}}
+
+/* ── Sidebar system — mobile/desktop ── */
+.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}
+.sb-backdrop.open{display:block}
+body.mobile .sb-backdrop{top:58px}
+
+aside{position:fixed;top:0;left:-100%;width:80%;height:100%;transition:0.3s;z-index:200;overflow-y:auto;overflow-x:hidden}
+aside.active{left:0}
+@media(min-width:769px){aside{left:0;width:250px}}
+@media(max-width:768px){aside{left:-250px}aside.active{left:0}}
+body.mobile aside{left:-100%;width:80%;top:58px;height:calc(100% - 58px)}
+body.mobile aside.active{left:0}
+body.desktop aside{left:0;width:250px;top:0;height:100%}
+body.mobile  #menu-toggle{display:flex !important}
+body.desktop #menu-toggle{display:none !important}
+
+/* En mobile: botón dentro del topbar */
+body.mobile #menu-toggle{
+  position:static;
+  box-shadow:none;
+  background:none;
+  border:1px solid var(--border);
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  flex-shrink:0;
+}
+body.mobile #menu-toggle .bar{background:var(--body)}
+body.mobile #menu-toggle:hover{background:var(--bg);box-shadow:none;transform:none}
+body.mobile #menu-toggle:active{transform:scale(.95)}
+body.mobile .sb-toggle{display:none !important}
+
+/* ── Hamburger button base ── */
+#menu-toggle{
+  width:38px;height:38px;border:none;border-radius:10px;
+  cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:5px;padding:0;flex-shrink:0;
+  transition:background .2s ease,box-shadow .2s ease,transform .15s ease;
+}
+#menu-toggle:hover{background:var(--blue-deep);box-shadow:0 6px 18px rgba(37,99,235,.45);transform:scale(1.06)}
+#menu-toggle:active{transform:scale(.95)}
+.bar{
+  display:block;width:20px;height:2px;border-radius:2px;background:#fff;
+  transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1);
+  transform-origin:center;
+}
+#menu-toggle.open .bar-1{transform:translateY(7px) rotate(45deg)}
+#menu-toggle.open .bar-2{opacity:0;width:0}
+#menu-toggle.open .bar-3{transform:translateY(-7px) rotate(-45deg)}
+
+/* logo-wrap hidden on mobile (aside starts below topbar) */
+body.mobile .logo-wrap{display:none}
+@media(min-width:901px){.sidebar{position:relative;transform:none;height:100vh}.sb-backdrop{display:none!important}}
 
 /* ═══════════════════════════════════════════════════════
    TOPBAR MOBILE — QuickBooks style
@@ -766,9 +820,9 @@ p, td, input, textarea, .sol-meta {
 </style>
 </head>
 <body>
-<div class="ovbg" id="ovbg" onclick="closeSB()"></div>
+<div id="sb-backdrop" class="sb-backdrop"></div>
 <div class="app">
-  <aside class="sidebar" id="sb">
+  <aside class="sidebar" id="cayena-sidebar">
     <div class="logo-wrap">
       <div class="logo"><div class="logo-dot"></div>Cayena</div>
       <div class="logo-rtn">RTN: 0318-2001-022079</div>
@@ -798,7 +852,12 @@ p, td, input, textarea, .sol-meta {
   <div class="main">
     <div class="topbar">
       <div class="tl">
-        <button class="mb" onclick="toggleSB()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <button id="menu-toggle" aria-label="Abrir menú">
+          <span class="bar bar-1"></span>
+          <span class="bar bar-2"></span>
+          <span class="bar bar-3"></span>
+        </button>
+        <button id="sb-toggle" class="mb sb-toggle"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
         <span class="tey">Cayena</span><div class="tsep"></div>
         <span class="ttl">Cuenta Corriente</span><div class="tsep"></div><div id="mes-selector-topbar"></div>
       </div>
@@ -1088,8 +1147,6 @@ async function saveRecord(){
   await render();
 }
 
-function toggleSB(){ el('sb').classList.toggle('open'); el('ovbg').classList.toggle('open'); }
-function closeSB()  { el('sb').classList.remove('open'); el('ovbg').classList.remove('open'); }
 
 function toast(msg,type=''){
   const t=el('toast'); t.textContent=msg;
@@ -1126,6 +1183,60 @@ el('formOverlay').addEventListener('click',e=>{ if(e.target===el('formOverlay'))
   document.addEventListener('keydown', function(e){
     if(e.key==='Escape'){ omMenu.classList.remove('open'); omBd && omBd.classList.remove('open'); }
   });
+})();
+</script>
+<script>
+// ── Sidebar IIFE ──────────────────────────────────────────────────────────────
+(function () {
+  var sidebar  = document.getElementById('cayena-sidebar');
+  var toggle   = document.getElementById('sb-toggle');
+  var backdrop = document.getElementById('sb-backdrop');
+  if (!sidebar || !toggle) return;
+  function open() {
+    sidebar.classList.add('open');
+    if (backdrop) backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  toggle.addEventListener('click', function () {
+    sidebar.classList.contains('open') ? close() : open();
+  });
+  if (backdrop) backdrop.addEventListener('click', close);
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 900) close();
+  });
+})();
+
+// ── Menu-toggle ───────────────────────────────────────────────────────────────
+(function() {
+  var toggleBtn = document.getElementById('menu-toggle');
+  var sidebarEl = document.querySelector('aside');
+  if (!toggleBtn || !sidebarEl) return;
+  toggleBtn.addEventListener('click', function() {
+    sidebarEl.classList.toggle('active');
+    toggleBtn.classList.toggle('open');
+  });
+})();
+
+// ── Mobile/Desktop detection ──────────────────────────────────────────────────
+(function() {
+  function esMobile() {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+  if (esMobile()) {
+    document.body.classList.add('mobile');
+  } else {
+    document.body.classList.add('desktop');
+    var aside = document.querySelector('aside');
+    if (aside) aside.classList.add('active');
+    var mt = document.getElementById('menu-toggle');
+    if (mt) mt.style.display = 'none';
+  }
+  var esMobile2 = window.innerWidth <= 768;
 })();
 </script>
 </body>
