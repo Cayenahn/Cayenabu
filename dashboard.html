@@ -32,7 +32,6 @@ body{overflow:hidden}
 
 /* ── SIDEBAR ── */
 .logo-wrap{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
-body.mobile .logo-wrap{display:none}
 .logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--text);line-height:1;display:flex;align-items:center;gap:8px}
 .logo-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#2563EB,#84CC16)}
 .logo-rtn{font-size:10px;color:var(--muted);margin-top:4px;font-weight:400}
@@ -50,7 +49,7 @@ body.mobile .logo-wrap{display:none}
 .ur{font-size:11px;color:var(--muted)}
 
 /* ── TOPBAR ── */
-.topbar{height:58px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;gap:12px;box-shadow:var(--shadow);position:relative;z-index:300}
+.topbar{height:58px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;gap:12px;box-shadow:var(--shadow)}
 .mb{display:none;background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;line-height:1;border-radius:8px;min-height:44px}
 .mb:hover{background:var(--bg)}
 .tl{display:flex;align-items:center;gap:10px}
@@ -166,12 +165,12 @@ body.mobile .logo-wrap{display:none}
 .mf{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--bg)}
 
 /* OVERLAY BG */
-.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}
-.sb-backdrop.open{display:block}
+.ovbg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}
+.ovbg.open{display:block}
 
 /* MOBILE */
 @media(max-width:900px){
-  .sidebar{position:fixed;left:0;top:58px;bottom:0;height:calc(100% - 58px);transform:translateX(-100%);overflow-y:auto;overflow-x:hidden
+  .sidebar{position:fixed;left:0;top:0;bottom:0;height:100%;transform:translateX(-100%)
 }
   .sidebar.open{transform:translateX(0)}
   .main{width:100%}
@@ -584,7 +583,7 @@ button {
 }
 
 /* Overlays/modales — iOS Safari no muestra bien backdrop-filter en todos */
-.sb-backdrop {
+.ovbg {
   -webkit-backdrop-filter: none; /* desactivar en iOS para rendimiento */
 }
 
@@ -661,87 +660,26 @@ p, td, input, textarea, .sol-meta {
 
 /* MOBILE_RESPONSIVE */
 
+@media(min-width:901px){.sidebar{position:relative;transform:none;height:100vh}.ovbg{display:none!important}}
 
-.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}
-.sb-backdrop.open{display:block}
-body.mobile .sb-backdrop{top:58px}
+/* ── Backup section ─────────────────────────────────────────────────────── */
+.backup-section{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 24px;margin-top:24px}
+.backup-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.backup-actions{display:flex;gap:12px;flex-wrap:wrap}
+.backup-btn{display:flex;flex-direction:column;align-items:flex-start;gap:3px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;font-size:13px;font-weight:600;color:var(--body);cursor:pointer;transition:all .15s;min-width:180px}
+.backup-btn svg{opacity:.6;margin-bottom:2px}
+.backup-btn:hover{border-color:var(--blue);color:var(--blue);background:#EFF6FF}
+.backup-btn:hover svg{opacity:1}
+.backup-import{cursor:pointer}
+.backup-sub{font-size:11px;font-weight:400;color:var(--muted)}
 
-aside{position:fixed;top:0;left:-100%;width:80%;height:100%;transition:0.3s;z-index:200;background:#111;overflow-y:auto;overflow-x:hidden}
-aside.active{left:0}
-@media(min-width:769px){aside{left:0;width:250px}}
-@media(max-width:768px){aside{left:-250px}aside.active{left:0}}
-body.mobile aside{left:-100%;width:80%;top:58px;height:calc(100% - 58px)}
-body.mobile aside.active{left:0}
-body.desktop aside{left:0;width:250px;top:0;height:100%}
-body.mobile  #menu-toggle{display:flex !important}
-body.desktop #menu-toggle{display:none !important}
-
-/* En mobile: el botón vive en el flow del topbar */
-body.mobile #menu-toggle{
-  position:static;
-  box-shadow:none;
-  background:none;
-  border:1px solid var(--border);
-  width:38px;
-  height:38px;
-  border-radius:10px;
-  flex-shrink:0;
-}
-body.mobile #menu-toggle .bar{background:var(--body)}
-body.mobile #menu-toggle:hover{background:var(--bg);box-shadow:none;transform:none}
-body.mobile #menu-toggle:active{transform:scale(.95)}
-
-/* Ocultar sb-toggle duplicado en mobile */
-body.mobile .sb-toggle{display:none !important}
-
-/* ── Botón hamburguesa ── */
-#menu-toggle{
-  width:38px;
-  height:38px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:5px;
-  padding:0;
-  flex-shrink:0;
-  transition:background .2s ease,box-shadow .2s ease,transform .15s ease;
-}
-#menu-toggle:hover{
-  background:var(--blue-deep);
-  box-shadow:0 6px 18px rgba(37,99,235,.45);
-  transform:scale(1.06);
-}
-#menu-toggle:active{transform:scale(.95)}
-.bar{
-  display:block;
-  width:20px;
-  height:2px;
-  border-radius:2px;
-  background:#fff;
-  transition:transform .3s cubic-bezier(.4,0,.2,1),
-             opacity   .3s cubic-bezier(.4,0,.2,1),
-             width     .3s cubic-bezier(.4,0,.2,1);
-  transform-origin:center;
-}
-aside.active ~ * #menu-toggle .bar-1,
-#menu-toggle.open .bar-1{transform:translateY(7px) rotate(45deg)}
-aside.active ~ * #menu-toggle .bar-2,
-#menu-toggle.open .bar-2{opacity:0;width:0}
-aside.active ~ * #menu-toggle .bar-3,
-#menu-toggle.open .bar-3{transform:translateY(-7px) rotate(-45deg)}
-@media(min-width:901px){.sidebar{position:relative;transform:none;height:100vh}.sb-backdrop{display:none!important}}
 </style>
-<link rel="stylesheet" href="sidebar.css">
 </head>
 <body>
-<div id="sb-backdrop" class="sb-backdrop"></div>
+<div class="ovbg" id="ovbg" onclick="closeSB()"></div>
 <div class="app">
 
-  <aside class="sidebar" id="cayena-sidebar">
+  <aside class="sidebar" id="sb">
     <div class="logo-wrap">
       <div class="logo"><div class="logo-dot"></div>Cayena</div>
       <div class="logo-rtn">RTN: 0318-2001-022079</div>
@@ -761,7 +699,7 @@ aside.active ~ * #menu-toggle .bar-3,
       <a class="ni" href="cuenta-corriente.html"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 7h12M5 10h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Cuenta Corriente</a>
       <a class="ni" href="asistencia.html"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Asistencia</a>
       <div class="ng">Análisis</div>
-      <a class="ni" href="#"><svg viewBox="0 0 16 16" fill="none"><path d="M2 13L5 9l3 2.5L11 5l3 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Costo de Ventas</a>
+      <a class="ni" href="wrap.html"><svg viewBox="0 0 16 16" fill="none"><path d="M2 13L5 9l3 2.5L11 5l3 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Costo de Ventas</a>
     </nav>
     <div class="su">
       <div class="av">AD</div>
@@ -772,18 +710,14 @@ aside.active ~ * #menu-toggle .bar-3,
   <div class="main">
     <div class="topbar">
       <div class="tl">
-        <button id="menu-toggle" aria-label="Abrir menú">
-          <span class="bar bar-1"></span>
-          <span class="bar bar-2"></span>
-          <span class="bar bar-3"></span>
-        </button>
-        <button id="sb-toggle" class="mb sb-toggle"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <button class="mb" onclick="toggleSB()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
         <span class="tey">Cayena</span><div class="tsep"></div>
-        <span class="ttl">Estado de Resultados</span><div class="tsep"></div>
-        <span class="tper" id="tper">—</span>
+        <span class="ttl">Estado de Resultados</span><div class="tsep"></div><div id="mes-selector-topbar"></div>
       </div>
       <div class="tr2">
         <button class="btn" onclick="exportPDF()">Exportar PDF</button>
+        <button class="btn" onclick="if(typeof API_Backup!=='undefined')API_Backup.exportJSON();else alert('Carga api.js primero')" title="Descargar backup completo JSON">⬇ Backup</button>
+        <button class="btn" onclick="if(typeof API_Backup!=='undefined')API_Backup.exportCSV();else alert('Carga api.js primero')" title="Exportar ingresos del mes como CSV">⬇ CSV</button>
         <button class="btn btn-primary" onclick="openModal()">+ Ingresar datos</button>
       </div>
     </div>
@@ -901,20 +835,21 @@ const v=id=>parseFloat(el(id).value)||0;
 const Lf=n=>'L '+parseFloat(n||0).toLocaleString('es-HN',{minimumFractionDigits:2,maximumFractionDigits:2});
 const pct=(n,t)=>t>0?(n/t*100).toFixed(1)+'%':'—';
 const MO=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+function toggleSB(){el('sb').classList.toggle('open');el('ovbg').classList.toggle('open');}
+function closeSB(){el('sb').classList.remove('open');el('ovbg').classList.remove('open');}
 function openModal(){
   const records=JSON.parse(localStorage.getItem('cayena_ingresos')||'[]');
   if(records.length){const t=parseFloat(records.reduce((s,r)=>s+(r.total||0),0).toFixed(2));if(t>0)el('f-ibv').value=t;}
   // Pre-fill compras del mes
   const compras=JSON.parse(localStorage.getItem('cayena_compras')||'[]');
   if(compras.length){
-    const now=new Date();const curY=now.getFullYear(),curM=now.getMonth();
+    const curY=getMesYear(),curM=getMesMonth();
     const mes=compras.filter(r=>{if(!r.fecha)return false;const[y,m]=r.fecha.split('-');return parseInt(y)===curY&&parseInt(m)-1===curM;});
     const t=parseFloat(mes.reduce((s,r)=>s+(r.total||0),0).toFixed(2));
     if(t>0)el('f-comp').value=t;
   }
   // Pre-fill inventario inicial y final
-  const now=new Date();
-  const curY=now.getFullYear(),curM=now.getMonth();
+  const curY=getMesYear(),curM=getMesMonth();
   const padM=String(curM+1).padStart(2,'0');
   const iniData=JSON.parse(localStorage.getItem('cayena_inv_inicial_'+curY+'-'+padM)||'{}');
   const finData=JSON.parse(localStorage.getItem('cayena_inv_final_'+curY+'-'+padM)||'{}');
@@ -938,7 +873,7 @@ function calcular(){
   const ibv=v('f-ibv'),oi=v('f-oi'),ini=v('f-ini'),comp=v('f-comp'),fin=v('f-fin');
   const nom=v('f-nom'),alq=v('f-alq')||6500,srv=v('f-srv')||519.255,mnt=v('f-mnt'),pub=v('f-pub')||3000,oop=v('f-oop');
   const ofi=v('f-ofi'),oadm=v('f-oadm')||5440.463,gfin=v('f-gfin')||13542.32;
-  const now=new Date();const per=MO[now.getMonth()]+' '+now.getFullYear();
+  const per=getMesLabel();
   el('tper').textContent=per;el('cpb').textContent=per;
   const ti=ibv+oi,mp=ini+comp-fin,rb=ti-mp;
   const tg=nom+alq+srv+mnt+pub+oop,ro=rb-tg;
@@ -972,7 +907,7 @@ function importFromIngresos(){
   if(!records.length)return;
   const total=parseFloat(records.reduce((s,r)=>s+(r.total||0),0).toFixed(2));
   if(total===0)return;
-  const now=new Date();const per=MO[now.getMonth()]+' '+now.getFullYear();
+  const per=getMesLabel();
   el('tper').textContent=per;el('cpb').textContent=per;
   el('f-ibv').value=total;
   el('sync-b').classList.add('show');
@@ -989,8 +924,7 @@ function importFromIngresos(){
 function importFromCompras(){
   const records=JSON.parse(localStorage.getItem('cayena_compras')||'[]');
   if(!records.length)return;
-  const now=new Date();
-  const curY=now.getFullYear(),curM=now.getMonth();
+  const curY=getMesYear(),curM=getMesMonth();
   // Filter only records from the current month
   const mesActual=records.filter(r=>{
     if(!r.fecha)return false;
@@ -1008,8 +942,7 @@ function importFromCompras(){
   el('gt-c').textContent=Lf(total);
 }
 function importFromInventario(){
-  const now=new Date();
-  const curY=now.getFullYear(),curM=now.getMonth();
+  const curY=getMesYear(),curM=getMesMonth();
   const padM=String(curM+1).padStart(2,'0');
   const iniKey='cayena_inv_inicial_'+curY+'-'+padM;
   const finKey='cayena_inv_final_'+curY+'-'+padM;
@@ -1040,7 +973,7 @@ function importFromInventario(){
     el('b-c').textContent='Con datos';el('b-c').className='sc-chip sc-ok';
   }
 }
-const now=new Date();const per=MO[now.getMonth()]+' '+now.getFullYear();
+const per=getMesLabel();
 el('tper').textContent=per;el('cpb').textContent=per;
 importFromIngresos();
 importFromCompras();
@@ -1122,31 +1055,22 @@ function exportPDF() {
   setTimeout(function(){w.print();}, 600);
 }
 
+// ── Backup init ──────────────────────────────────────────────────────────
+(function() {
+  var lbl = document.getElementById('backup-mes-label');
+  if (lbl && typeof getMesLabel === 'function') lbl.textContent = getMesLabel();
+})();
+
 </script>
 <script src="supabase-config.js"></script>
+<script src="mes-global.js"></script>
+<script src="api.js"></script>
 <script>
-const toggleBtn = document.getElementById('menu-toggle');
-const sidebarEl = document.querySelector('aside');
-toggleBtn.addEventListener('click', () => {
-    sidebarEl.classList.toggle('active');
-    toggleBtn.classList.toggle('open');
-});
+// ── Selector de mes global ────────────────────────────────────────────────
+(function() {
+  if (typeof initSelectorMes === 'undefined') return;
+  initSelectorMes('mes-selector-topbar', '2026-01');
+})();
 </script>
-<script>
-function esMobile() {
-    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-if (esMobile()) {
-    console.log("Es un teléfono 📱");
-    document.body.classList.add("mobile");
-} else {
-    console.log("Es una PC 💻");
-    document.body.classList.add("desktop");
-    document.querySelector('aside').classList.add('active');
-    document.getElementById('menu-toggle').style.display = 'none';
-}
-const esMobile2 = window.innerWidth <= 768;
-</script>
-<script src="sidebar.js"></script>
 </body>
 </html>
