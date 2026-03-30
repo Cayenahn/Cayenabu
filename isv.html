@@ -27,7 +27,6 @@ body{overflow-x:hidden}
 .sidebar{width:240px;min-width:240px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:90;box-shadow:var(--shadow)}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .logo-wrap{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
-body.mobile .logo-wrap{display:none}
 .logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--text);line-height:1;display:flex;align-items:center;gap:8px}
 .logo-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#2563EB,#84CC16)}
 .logo-rtn{font-size:10px;color:var(--muted);margin-top:4px}
@@ -42,7 +41,7 @@ body.mobile .logo-wrap{display:none}
 .av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-soft));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
 .un{font-size:13px;font-weight:600;color:var(--text)}
 .ur{font-size:11px;color:var(--muted)}
-.topbar{height:58px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;gap:12px;box-shadow:var(--shadow);position:relative;z-index:300}
+.topbar{height:58px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;gap:12px;box-shadow:var(--shadow)}
 .mb{display:none;background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;line-height:1;border-radius:8px;min-height:44px}
 .mb:hover{background:var(--bg)}
 .tl{display:flex;align-items:center;gap:10px}
@@ -158,81 +157,11 @@ body.mobile .logo-wrap{display:none}
 .fb-total.zero{color:rgba(255,255,255,.3)}
 .fb-total.credit{color:#BEF264}
 
-.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}
-.sb-backdrop.open{display:block}
-body.mobile .sb-backdrop{top:58px}
-
-aside{position:fixed;top:0;left:-100%;width:80%;height:100%;transition:0.3s;z-index:200;background:#111;overflow-y:auto;overflow-x:hidden}
-aside.active{left:0}
-@media(min-width:769px){aside{left:0;width:250px}}
-@media(max-width:768px){aside{left:-250px}aside.active{left:0}}
-body.mobile aside{left:-100%;width:80%;top:58px;height:calc(100% - 58px)}
-body.mobile aside.active{left:0}
-body.desktop aside{left:0;width:250px;top:0;height:100%}
-body.mobile  #menu-toggle{display:flex !important}
-body.desktop #menu-toggle{display:none !important}
-
-/* En mobile: el botón vive en el flow del topbar, no flotando encima */
-body.mobile #menu-toggle{
-  position:static;
-  box-shadow:none;
-  background:none;
-  border:1px solid var(--border);
-  width:38px;
-  height:38px;
-  border-radius:10px;
-  flex-shrink:0;
-}
-body.mobile #menu-toggle .bar{ background:var(--body); }
-body.mobile #menu-toggle:hover{ background:var(--bg); box-shadow:none; transform:none; }
-body.mobile #menu-toggle:active{ transform:scale(.95); }
-
-/* Ocultar el sb-toggle duplicado en mobile ya que #menu-toggle lo reemplaza */
-body.mobile .sb-toggle{ display:none !important; }
-
-/* ── Botón hamburguesa ───────────────────────────────────────────── */
-#menu-toggle{
-  width:38px;
-  height:38px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:5px;
-  padding:0;
-  flex-shrink:0;
-  transition:background .2s ease, box-shadow .2s ease, transform .15s ease;
-}
-#menu-toggle:hover{
-  background:var(--blue-deep);
-  box-shadow:0 6px 18px rgba(37,99,235,.45);
-  transform:scale(1.06);
-}
-#menu-toggle:active{ transform:scale(.95); }
-.bar{
-  display:block;
-  width:20px;
-  height:2px;
-  border-radius:2px;
-  background:#fff;
-  transition:transform .3s cubic-bezier(.4,0,.2,1),
-             opacity   .3s cubic-bezier(.4,0,.2,1),
-             width     .3s cubic-bezier(.4,0,.2,1);
-  transform-origin:center;
-}
-/* Animación a X cuando el aside está activo */
-aside.active ~ * #menu-toggle .bar-1,
-#menu-toggle.open .bar-1{ transform:translateY(7px) rotate(45deg); }
-aside.active ~ * #menu-toggle .bar-2,
-#menu-toggle.open .bar-2{ opacity:0; width:0; }
-aside.active ~ * #menu-toggle .bar-3,
-#menu-toggle.open .bar-3{ transform:translateY(-7px) rotate(-45deg); }
+.ovbg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:89}
+.ovbg.open{display:block}
 
 @media(max-width:900px){
-  .sidebar{position:fixed;left:0;top:58px;bottom:0;height:calc(100% - 58px);transform:translateX(-100%);overflow-y:auto;overflow-x:hidden
+  .sidebar{position:fixed;left:0;top:0;bottom:0;height:100%;transform:translateX(-100%)
 }
   .sidebar.open{transform:translateX(0)}
   .main{width:100%}
@@ -651,7 +580,7 @@ button {
 }
 
 /* Overlays/modales — iOS Safari no muestra bien backdrop-filter en todos */
-.sb-backdrop {
+.ovbg {
   -webkit-backdrop-filter: none; /* desactivar en iOS para rendimiento */
 }
 
@@ -728,16 +657,14 @@ p, td, input, textarea, .sol-meta {
 
 /* MOBILE_RESPONSIVE */
 
-@media(min-width:901px){.sidebar{position:relative;transform:none;height:100vh}.sb-backdrop{display:none!important}}
+@media(min-width:901px){.sidebar{position:relative;transform:none;height:100vh}.ovbg{display:none!important}}
 </style>
-<link rel="stylesheet" href="sidebar.css">
 </head>
 <body>
-<div id="sb-backdrop" class="sb-backdrop"></div>
+<div class="ovbg" id="ovbg" onclick="closeSB()"></div>
 <div class="app">
 
-
-  <aside class="sidebar" id="cayena-sidebar">
+  <aside class="sidebar" id="sb">
     <div class="logo-wrap">
       <div class="logo"><div class="logo-dot"></div>Cayena</div>
       <div class="logo-rtn">RTN: 0318-2001-022079</div>
@@ -768,12 +695,7 @@ p, td, input, textarea, .sol-meta {
   <div class="main">
     <div class="topbar">
       <div class="tl">
-        <button id="menu-toggle" aria-label="Abrir menú">
-          <span class="bar bar-1"></span>
-          <span class="bar bar-2"></span>
-          <span class="bar bar-3"></span>
-        </button>
-        <button id="sb-toggle" class="mb sb-toggle"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <button class="mb" onclick="toggleSB()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
         <span class="tey">Cayena</span><div class="tsep"></div>
         <span class="ttl">Resumen ISV</span><div class="tsep"></div>
         <span class="tper" id="tper">—</span>
@@ -943,6 +865,8 @@ p, td, input, textarea, .sol-meta {
 const el=id=>document.getElementById(id);
 const Lf=n=>'L '+parseFloat(n||0).toLocaleString('es-HN',{minimumFractionDigits:2,maximumFractionDigits:2});
 const MO=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+function toggleSB(){el('sb').classList.toggle('open');el('ovbg').classList.toggle('open');}
+function closeSB(){el('sb').classList.remove('open');el('ovbg').classList.remove('open');}
 function fmtDate(iso){const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;}
 
 function loadData(){
@@ -1101,39 +1025,7 @@ function exportPDF() {
     + '<table><thead><tr><th>Fecha</th><th>Gravadas 15%</th><th>Gravadas 18%</th><th>Exentas</th><th>ISV Total</th></tr></thead>'
     + '<tbody>' + rows + '</tbody></table></div>'
     + '<div class="footer"><span>Cayena - Liquidaci\u00F3n ISV</span><span>' + fecha + '</span></div>'
-    + '<script>
-(function () {
-  var sidebar  = document.getElementById('cayena-sidebar');
-  var toggle   = document.getElementById('sb-toggle');
-  var backdrop = document.getElementById('sb-backdrop');
-
-  if (!sidebar || !toggle) return;
-
-  function open() {
-    sidebar.classList.add('open');
-    if (backdrop) backdrop.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function close() {
-    sidebar.classList.remove('open');
-    if (backdrop) backdrop.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  toggle.addEventListener('click', function () {
-    sidebar.classList.contains('open') ? close() : open();
-  });
-
-  if (backdrop) backdrop.addEventListener('click', close);
-
-  window.addEventListener('resize', function () {
-    if (window.innerWidth > 900) close();
-  });
-
-})();
-</script>
-</body></html>';
+    + '</body></html>';
   var w = window.open('','_blank','width=900,height=700');
   w.document.write(html);
   w.document.close();
@@ -1157,61 +1049,5 @@ if(typeof DB_ISV !== 'undefined'){
   })();
 }
 </script>
-<script>
-(function () {
-  var sidebar  = document.getElementById('cayena-sidebar');
-  var toggle   = document.getElementById('sb-toggle');
-  var backdrop = document.getElementById('sb-backdrop');
-
-  if (!sidebar || !toggle) return;
-
-  function open() {
-    sidebar.classList.add('open');
-    if (backdrop) backdrop.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function close() {
-    sidebar.classList.remove('open');
-    if (backdrop) backdrop.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  toggle.addEventListener('click', function () {
-    sidebar.classList.contains('open') ? close() : open();
-  });
-
-  if (backdrop) backdrop.addEventListener('click', close);
-
-  window.addEventListener('resize', function () {
-    if (window.innerWidth > 900) close();
-  });
-
-})();
-</script>
-<script>
-const toggleBtn = document.getElementById('menu-toggle');
-const sidebar = document.querySelector('aside');
-toggleBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('active');
-    toggleBtn.classList.toggle('open');
-});
-</script>
-<script>
-function esMobile() {
-    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-if (esMobile()) {
-    console.log("Es un teléfono 📱");
-    document.body.classList.add("mobile");
-} else {
-    console.log("Es una PC 💻");
-    document.body.classList.add("desktop");
-    document.querySelector('aside').classList.add('active');
-    document.getElementById('menu-toggle').style.display = 'none';
-}
-const esMobile2 = window.innerWidth <= 768;
-</script>
-<script src="sidebar.js"></script>
 </body>
 </html>
