@@ -943,12 +943,15 @@ body.mobile .logo-wrap{display:none}
       </div>
 
       <div class="sync-b" id="sync-b">
-        <div>
+          <div>
           <div class="sbt" id="sbt"></div>
           <div class="sbs" id="sbs"></div>
         </div>
         <button class="sbx" onclick="clearSync()">×</button>
       </div>
+
+      <!-- ── Banner planilla neta ── -->
+      <div id="planilla-neta-banner" style="display:none;align-items:flex-start;gap:12px;padding:12px 16px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--r);margin-bottom:16px;font-family:var(--font)"></div>
 
       <div class="sl">Ingresos</div>
       <div class="pl-block">
@@ -1017,7 +1020,11 @@ body.mobile .logo-wrap{display:none}
     </div>
     <div class="fsh"><span>Gastos Operativos</span></div>
     <div class="fg">
-      <div class="ff"><label>Nómina (L.)</label><input type="number" id="f-nom" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="ff">
+        <label>Nómina (L.) <span id="nom-planilla-hint" style="font-size:10px;font-weight:400;color:var(--muted)"></span></label>
+        <input type="number" id="f-nom" placeholder="0.00" min="0" step="0.01">
+        <div id="nom-planilla-detail" style="display:none;font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5"></div>
+      </div>
       <div class="ff"><label>Alquiler (L.)</label><input type="number" id="f-alq" placeholder="6500.00" min="0" step="0.01"></div>
       <div class="ff"><label>Servicios públicos (L.)</label><input type="number" id="f-srv" placeholder="519.26" min="0" step="0.01"></div>
       <div class="ff"><label>Mantenimiento (L.)</label><input type="number" id="f-mnt" placeholder="0.00" min="0" step="0.01"></div>
@@ -1185,6 +1192,48 @@ importFromIngresos();
 importFromCompras();
 importFromInventario();
 importFromGastos();
+importFromPlanilla();
+
+function importFromPlanilla(){
+  const raw = localStorage.getItem('cayena_planilla_neta');
+  if(!raw) return;
+  try {
+    const pn = JSON.parse(raw);
+    if(!pn || !pn.planillaBruta) return;
+
+    // Pre-fill Nómina con planillaBruta (P&L formal usa bruto)
+    if(pn.planillaBruta > 0) el('f-nom').value = pn.planillaBruta.toFixed(2);
+
+    // Hint en el campo nómina del modal
+    const hint = document.getElementById('nom-planilla-hint');
+    const detail = document.getElementById('nom-planilla-detail');
+    if(hint) hint.textContent = '· Auto-importado desde Planilla (' + (pn.periodo||'') + ')';
+    if(detail){
+      detail.style.display = 'block';
+      detail.innerHTML =
+        '📊 Bruta: <strong>' + Lf(pn.planillaBruta) + '</strong> · ' +
+        '💰 Neta caja: <strong style="color:var(--blue)">' + Lf(pn.planillaNeta) + '</strong><br>' +
+        'Adelantos: ' + Lf(pn.adelantos) + ' · Préstamos: ' + Lf(pn.prestamos) +
+        ' · Subsidio comida: ' + Lf(pn.consumoEmpleados) + ' · Cobros: ' + Lf(pn.cobrosHerramientas);
+    }
+
+    // Banner informativo en el P&L
+    const banner = document.getElementById('planilla-neta-banner');
+    if(banner){
+      banner.style.display = 'flex';
+      banner.innerHTML =
+        '<div style="flex:1">' +
+          '<div style="font-size:12px;font-weight:700;color:var(--blue-deep)">💰 Planilla importada · ' + (pn.periodo||'—') + '</div>' +
+          '<div style="font-size:11px;color:var(--body);margin-top:3px">' +
+            'Bruta (P&amp;L): <strong>' + Lf(pn.planillaBruta) + '</strong> &nbsp;|&nbsp; ' +
+            'Neta caja: <strong style="color:var(--blue)">' + Lf(pn.planillaNeta) + '</strong> &nbsp;|&nbsp; ' +
+            'Adelantos: ' + Lf(pn.adelantos) + ' &nbsp;·&nbsp; Préstamos: ' + Lf(pn.prestamos) +
+          '</div>' +
+        '</div>' +
+        '<button onclick="this.parentNode.style.display=\'none\'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0 4px;min-height:auto;line-height:1">×</button>';
+    }
+  } catch(e) { console.warn('importFromPlanilla:', e); }
+}
 
 function importFromGastos(){
   const data=JSON.parse(localStorage.getItem('cayena_gastos_totales')||'null');
