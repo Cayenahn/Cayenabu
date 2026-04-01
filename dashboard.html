@@ -1201,29 +1201,85 @@ function importFromPlanilla(){
     const pn = JSON.parse(raw);
     if(!pn || !pn.planillaBruta) return;
 
-    // Pre-fill Nómina con planillaBruta (P&L formal usa bruto)
+    // ── 1. Pre-fill modal input ───────────────────────────────────────────
     if(pn.planillaBruta > 0) el('f-nom').value = pn.planillaBruta.toFixed(2);
 
-    // Hint en el campo nómina del modal
-    const hint = document.getElementById('nom-planilla-hint');
+    // ── 2. Actualizar directamente g-nom en el P&L visible ───────────────
+    if(pn.planillaBruta > 0){
+      sa('g-nom', pn.planillaBruta);
+      el('b-gop').textContent = 'Con datos';
+      el('b-gop').className  = 'sc-chip sc-ok';
+
+      // Recalcular totales visibles con el nuevo valor de nómina
+      // Leer valores actuales de los demás campos del P&L
+      const nom  = pn.planillaBruta;
+      const alq  = v('f-alq')  || 6500;
+      const srv  = v('f-srv')  || 519.255;
+      const mnt  = v('f-mnt');
+      const pub  = v('f-pub')  || 3000;
+      const oop  = v('f-oop');
+      const ofi  = v('f-ofi');
+      const oadm = v('f-oadm') || 5440.463;
+      const gfin = v('f-gfin') || 13542.32;
+
+      const ibv  = v('f-ibv');
+      const oi   = v('f-oi');
+      const ini  = v('f-ini');
+      const comp = v('f-comp');
+      const fin  = v('f-fin');
+
+      const ti = ibv + oi;
+      const mp = ini + comp - fin;
+      const rb = ti - mp;
+      const tg = nom + alq + srv + mnt + pub + oop;
+      const ro = rb - tg;
+      const ta = ofi + oadm + gfin;
+      const ai = ro - ta;
+      const isr  = ai > 0 ? ai * 0.15 : 0;
+      const neto = ai - isr;
+
+      // Actualizar porcentaje nómina
+      el('p-nom').textContent = ti > 0 && nom > 0 ? pct(nom, ti) : '—';
+
+      // Actualizar total gastos operativos
+      el('gt-gop').textContent = tg > 0 ? Lf(tg) : '—';
+
+      // Recalcular resultado operativo y resultado neto
+      sr('r-op', ro);
+
+      // Resultado antes de impuestos
+      ss('r-ai', ai);
+      el('g-isr').textContent  = isr > 0 ? Lf(isr) : '—';
+      el('f-isr').textContent  = isr > 0 ? Lf(isr) : 'L 0.00';
+
+      // Resultado neto final
+      const fn = el('r-neto');
+      fn.textContent = Lf(Math.abs(neto));
+      fn.className   = 'fv ' + (neto > 0 ? 'p' : neto < 0 ? 'n' : 'mt');
+    }
+
+    // ── 3. Hint en el campo del modal ─────────────────────────────────────
+    const hint   = document.getElementById('nom-planilla-hint');
     const detail = document.getElementById('nom-planilla-detail');
-    if(hint) hint.textContent = '· Auto-importado desde Planilla (' + (pn.periodo||'') + ')';
+    if(hint)   hint.textContent = '· Auto desde Planilla (' + (pn.periodo||'') + ')';
     if(detail){
       detail.style.display = 'block';
       detail.innerHTML =
-        '📊 Bruta: <strong>' + Lf(pn.planillaBruta) + '</strong> · ' +
+        '📊 Bruta: <strong>' + Lf(pn.planillaBruta) + '</strong> &nbsp;·&nbsp; ' +
         '💰 Neta caja: <strong style="color:var(--blue)">' + Lf(pn.planillaNeta) + '</strong><br>' +
-        'Adelantos: ' + Lf(pn.adelantos) + ' · Préstamos: ' + Lf(pn.prestamos) +
-        ' · Subsidio comida: ' + Lf(pn.consumoEmpleados) + ' · Cobros: ' + Lf(pn.cobrosHerramientas);
+        'Adelantos: '    + Lf(pn.adelantos)          + ' &nbsp;·&nbsp; ' +
+        'Préstamos: '    + Lf(pn.prestamos)           + ' &nbsp;·&nbsp; ' +
+        'Subsidio: '     + Lf(pn.consumoEmpleados)    + ' &nbsp;·&nbsp; ' +
+        'Cobros: '       + Lf(pn.cobrosHerramientas);
     }
 
-    // Banner informativo en el P&L
+    // ── 4. Banner informativo ─────────────────────────────────────────────
     const banner = document.getElementById('planilla-neta-banner');
     if(banner){
       banner.style.display = 'flex';
       banner.innerHTML =
         '<div style="flex:1">' +
-          '<div style="font-size:12px;font-weight:700;color:var(--blue-deep)">💰 Planilla importada · ' + (pn.periodo||'—') + '</div>' +
+          '<div style="font-size:12px;font-weight:700;color:var(--blue-deep)">💰 Nómina importada desde Planilla · ' + (pn.periodo||'—') + '</div>' +
           '<div style="font-size:11px;color:var(--body);margin-top:3px">' +
             'Bruta (P&amp;L): <strong>' + Lf(pn.planillaBruta) + '</strong> &nbsp;|&nbsp; ' +
             'Neta caja: <strong style="color:var(--blue)">' + Lf(pn.planillaNeta) + '</strong> &nbsp;|&nbsp; ' +
